@@ -56,13 +56,14 @@ else
     echo  -e "expense user already created... $Y SKIPPING $N"
 fi
 
-mkdir /app
+mkdir -p /app &>>$LOGFILE
+VALIDATE $? "Creating app dir"
 
 curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOGFILE
-VALIDATE $? "downloading backend tom tmp"
+VALIDATE $? "downloading backend to tmp"
 
 cd /app
-
+rm -rf /app/*
 unzip /tmp/backend.zip &>>$LOGFILE
 VALIDATE $? "unzipping backend in app dir"
 
