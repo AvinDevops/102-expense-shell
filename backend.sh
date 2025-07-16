@@ -13,6 +13,10 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+#reading password
+echo "please enter db password:"
+read mysql_root_password
+
 #checking root user or not
 if [ $USERID -ne 0 ]
 then 
@@ -74,7 +78,7 @@ VALIDATE $? "Enabling backend service"
 dnf install mysql -y &>>$LOGFILE
 VALIDATE $? "Installing mysql client"
 
-mysql -h <MYSQL-SERVER-IPADDRESS> -uroot -pExpenseApp@1 < /app/schema/backend.sql &>>$LOGFILE
+mysql -h <MYSQL-SERVER-IPADDRESS> -uroot -p${mysql_root_password} < /app/schema/backend.sql &>>$LOGFILE
 VALIDATE $? "schema loading"
 
 systemctl restart backend &>>$LOGFILE
