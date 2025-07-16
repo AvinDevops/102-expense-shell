@@ -49,7 +49,7 @@ VALIDATE $? "removing old file in html dir"
 curl -o /tmp/frontend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-frontend-v2.zip &>>$LOGFILE
 VALIDATE $? "downloading frontend"
 
-cd /usr/share/nginx/html
+cd /usr/share/nginx/html &>>$LOGFILE
 
 unzip /tmp/frontend.zip &>>$LOGFILE
 VALIDATE $? "Unzipping frontend in html dir"
