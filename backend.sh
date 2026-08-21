@@ -12,6 +12,10 @@ G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
 
+#giving mysql root password at execution time
+echo -e "$R please enter you root password: $N"
+read MYSQL_ROOT_PASSWORD
+
 #checking root user or not
 if [ $USER -ne 0 ]
 then
@@ -41,5 +45,45 @@ VALIDATE $? "Enabiling nodejs 20v"
 dnf install nodejs -y &>>$LOGFILE
 VALIDATE $? "Installing nodejs"
 
-useradd expense &>>$LOGFILE
-VALIDATE $? "Creating expense user"
+id expense
+if [ $? -ne 0 ]
+then
+    useradd expense &>>$LOGFILE
+    VALIDATE $? "Creating expense user"
+else
+    echo -e "user expense already created...$Y SKIPPING $N"
+fi
+
+mkdir /app &>>$LOGFILE
+VALIDATE $? "Creating app dir"
+
+curl -o /tmp/backend.zip https://expense-builds.s3.us-east-1.amazonaws.com/expense-backend-v2.zip &>>$LOGFILE
+VALIDATE $? "Downloading backend zip folder to tmp"
+
+cd /app
+unzip /tmp/backend.zip &>>$LOGFILE
+VALIDATE $? "Unzipping backend file in app dir"
+
+npm install &>>$LOGFILE
+VALIDATE $? "Installing dependencies"
+
+cp /home/ec2-user/102-expense-shell/backend.service /etc/systemd/system/backend.service &>>$LOGFILE
+VALIDATE $? "Copying backend service file to system dir"
+
+systemctl daemon-reload &>>$LOGFILE
+VALIDATE $? "Daemon reloading"
+
+systemctl start backend &>>$LOGFILE
+VALIDATE $? "Starting backend service"
+
+systemctl enable backend &>>$LOGFILE
+VALIDATE $? "Enabiling backend service"
+
+dnf install mysql -y &>>$LOGFILE
+VALIDATE $? "Installing mysql client"
+
+mysql -h db.aviexpense.online -uroot -p${MYSQL_ROOT_PASSWORD} < /app/schema/backend.sql &>>$LOGFILE
+VALIDATE $? "Loading Schema"
+
+systemctl restart backend &>>$LOGFILE
+VALIDATE $? "Restarting backend service"
