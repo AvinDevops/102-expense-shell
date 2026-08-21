@@ -36,6 +36,8 @@ VALIDATE(){
     fi
 }
 
+
+#configuring main steps
 dnf module disable nodejs:18 -y &>>$LOGFILE
 VALIDATE $? "Disabiling nodejs 18v"
 
