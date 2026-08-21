@@ -37,5 +37,13 @@ VALIDATE $? "Enabiling mysql"
 systemctl start mysqld &>>$LOGFILE
 VALIDATE $? "Starting mysql"
 
-mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
-VALIDATE $? "Setting password for root"
+# mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+# VALIDATE $? "Setting password for root"
+mysql -h db.aviexpense.online -uroot -pExpenseApp@1 -e 'show databases;' &>>$LOGFILE
+if [ $? -ne 0 ]
+then
+    mysql_secure_installation --set-root-pass ExpenseApp@1 &>>$LOGFILE
+    VALIDATE $? "Setting password for root"
+else
+    echo "Password for mysql root user already set...SKIPPING"
+fi
