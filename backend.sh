@@ -18,7 +18,7 @@ then
     echo -e "$R you are not root user, please access with root user $N"
     exit
 else
-    echo -e "$R you are root user $N"
+    echo -e "$G you are root user $N"
 fi
 
 #creating validation function for checking command success or failure
@@ -29,6 +29,7 @@ VALIDATE(){
         exit
     else
         echo -e "$2 is...$G SUCCESS $N"
+    fi
 }
 
 dnf module disable nodejs:18 -y &>>$LOGFILE
